@@ -276,8 +276,6 @@
 @synthesize capturing            = _capturing;
 @synthesize results              = _results;
 
-SystemSoundID _soundFileObject;
-
 //--------------------------------------------------------------------------
 - (id)initWithPlugin:(CDVBarcodeScanner*)plugin
             callback:(NSString*)callback
@@ -296,9 +294,6 @@ parentViewController:(UIViewController*)parentViewController
     self.capturing = NO;
     self.results = [NSMutableArray new];
 
-    CFURLRef soundFileURLRef  = CFBundleCopyResourceURL(CFBundleGetMainBundle(), CFSTR("CDVBarcodeScanner.bundle/beep"), CFSTR ("caf"), NULL);
-    AudioServicesCreateSystemSoundID(soundFileURLRef, &_soundFileObject);
-
     return self;
 }
 
@@ -314,9 +309,6 @@ parentViewController:(UIViewController*)parentViewController
     self.results = nil;
 
     self.capturing = NO;
-
-    AudioServicesRemoveSystemSoundCompletion(_soundFileObject);
-    AudioServicesDisposeSystemSoundID(_soundFileObject);
 
     [super dealloc];
 }
@@ -396,7 +388,6 @@ parentViewController:(UIViewController*)parentViewController
         [self barcodeScanDone:^{
             [self.plugin returnSuccess:text format:format cancelled:FALSE flipped:FALSE callback:self.callback];
         }];
-        AudioServicesPlaySystemSound(_soundFileObject);
     });
 }
 
